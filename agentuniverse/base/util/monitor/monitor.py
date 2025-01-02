@@ -143,6 +143,18 @@ class Monitor(BaseModel):
         return FrameworkContextManager().get_context(trace_id + '_invocation_chain', []) if trace_id is not None else []
 
     @staticmethod
+    def pop_invocation_chain():
+        """Pop the last chain node in invocation chain."""
+        trace_id = FrameworkContextManager().get_context('trace_id')
+        if trace_id is not None:
+            invocation_chain: list = FrameworkContextManager().get_context(
+                trace_id + '_invocation_chain')
+            if invocation_chain is not None:
+                invocation_chain.pop()
+                FrameworkContextManager().set_context(
+                    trace_id + '_invocation_chain', invocation_chain)
+
+    @staticmethod
     def init_token_usage():
         """Initialize the token usage in the framework context."""
         Monitor.init_trace_id()
